@@ -2,18 +2,25 @@ package manager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class RoomActionPanel extends JPanel {
+public class RoomActionPanel extends JPanel implements ActionListener {
 
     private JButton addBtn, removeBtn, availabilityBtn, termDatesBtn;
     private GridBagConstraints cons;
+    private RoomActionListener listener;
 
     public RoomActionPanel(){
 
         addBtn = new JButton("Add Room");
+        addBtn.addActionListener(this);
         removeBtn = new JButton("Remove Room");
+        removeBtn.addActionListener(this);
         availabilityBtn = new JButton("Manage Availability");
+        availabilityBtn.addActionListener(this);
         termDatesBtn = new JButton("Set Term Dates");
+        termDatesBtn.addActionListener(this);
 
         drawUI();
     }
@@ -47,5 +54,21 @@ public class RoomActionPanel extends JPanel {
         cons.gridx = 1;
         cons.gridy = 1;
         add(termDatesBtn, cons);
+    }
+
+    public void setActionListener(RoomActionListener actionListener){
+        listener = actionListener;
+    }
+
+    public JButton getAddButton(){ return addBtn; }
+    public JButton getRemoveButton(){ return removeBtn; }
+    public JButton getAvailabilityButton(){ return availabilityBtn; }
+    public JButton getTermDateButton(){ return termDatesBtn; }
+
+    @Override
+    public void actionPerformed(ActionEvent actionEvent) {
+        if(listener != null) {
+            listener.roomEventOccurred(actionEvent);
+        }
     }
 }

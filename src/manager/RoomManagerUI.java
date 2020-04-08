@@ -13,20 +13,24 @@ public class RoomManagerUI extends JPanel {
     private TableDisplayPanel tableDisplayPanel;
     private RoomActionPanel roomActionPanel;
 
+    private RoomController roomController;
+
     private RoomManagerUI(){
         //Drawing component implementation goes here
         setLayout(new FlowLayout());
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2, true));
 
-        //Initialise objects
+        //Initialise UI and controller objects
         initUI();
+        //Adds the room manager user interface panels to this class
+        addUIPanels();
 
-        //Add search panel to UI
-        add(searchPanel);
-        //Add table display panel to UI
-        add(tableDisplayPanel);
-        //Add room actions panel to UI
-        add(roomActionPanel);
+        /**
+         * Listens out for button click event on the RoomActionPanel
+         */
+        roomActionPanel.setActionListener(event -> {
+            roomController.handleButtonEvent(roomActionPanel, event);
+        });
 
     }
 
@@ -38,10 +42,19 @@ public class RoomManagerUI extends JPanel {
     }
 
     private void initUI() {
-        if (searchPanel == null) { searchPanel = new TableSearchPanel(); }
-        if (tableDisplayPanel == null) { tableDisplayPanel = new TableDisplayPanel(); }
-        if(roomActionPanel == null){ roomActionPanel = new RoomActionPanel(); }
+         searchPanel = new TableSearchPanel();
+         tableDisplayPanel = new TableDisplayPanel();
+         roomActionPanel = new RoomActionPanel();
+         roomController = new RoomController();
+    }
 
+    private void addUIPanels(){
+        //Add search panel to UI
+        add(searchPanel);
+        //Add table display panel to UI
+        add(tableDisplayPanel);
+        //Add room actions panel to UI
+        add(roomActionPanel);
     }
 
 
