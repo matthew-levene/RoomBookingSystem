@@ -1,13 +1,23 @@
 package manager;
 
 import javax.swing.*;
+import java.awt.*;
+import sharedui.TableSearchPanel;
 
 public class RoomManagerUI extends JPanel {
 
     private static RoomManagerUI instance;
+    private TableSearchPanel searchPanel;
 
     private RoomManagerUI(){
         //Drawing component implementation goes here
+        setLayout(new FlowLayout());
+
+        initUI();
+
+        //Add components to UI
+        add(searchPanel);
+
 
     }
 
@@ -17,6 +27,15 @@ public class RoomManagerUI extends JPanel {
          }
          return instance;
     }
+
+    private void initUI() {
+        if (searchPanel == null) {
+            searchPanel = new TableSearchPanel();
+        }
+    }
+
+
+
 
 
 }
