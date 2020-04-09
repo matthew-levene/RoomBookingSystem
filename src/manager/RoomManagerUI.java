@@ -3,8 +3,8 @@ package manager;
 import javax.swing.*;
 import java.awt.*;
 
-import sharedui.TableDisplayPanel;
-import sharedui.TableSearchPanel;
+import shared.ui.TableDisplayPanel;
+import shared.ui.TableSearchPanel;
 
 public class RoomManagerUI extends JPanel {
 
