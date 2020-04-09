@@ -45,7 +45,7 @@ public class RoomManagerUI extends JPanel {
          searchPanel = new TableSearchPanel();
          tableDisplayPanel = new TableDisplayPanel();
          roomActionPanel = new RoomActionPanel();
-         roomController = new RoomController();
+         roomController = new RoomController(this);
     }
 
     private void addUIPanels(){
@@ -57,8 +57,7 @@ public class RoomManagerUI extends JPanel {
         add(roomActionPanel);
     }
 
-
-
-
-
+    public TableDisplayPanel getTableDisplayPanel(){
+        return tableDisplayPanel;
+    }
 }
