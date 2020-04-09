@@ -1,5 +1,6 @@
 package manager.dialogs;
 
+import javafx.scene.control.RadioButton;
 import shared.data.Availability;
 
 import javax.swing.*;
@@ -209,11 +210,18 @@ public class AddRoomDialog extends JDialog implements ActionListener {
         return roomCapacity;
     }
 
+    public boolean isEmpty(String ... args){
+        for(String value : args){
+            if(value.isEmpty()){
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource() == addBtn){
-            //TODO: Checks to see if the text fields are empty or lists and buttons are not selected
             String date = dateTxt.getText();
             String fromTime = availFromTxt.getText();
             String toTime = availToTxt.getText();
@@ -221,19 +229,44 @@ public class AddRoomDialog extends JDialog implements ActionListener {
             String toSelected = "";
             String day = (String) dayCbo.getSelectedItem();
 
+            //Check if the 'from' radio buttons have been selected
             if(fromAMRad.isSelected()){ fromSelected = fromAMRad.getText(); }
-            else{fromSelected = fromPMRad.getText();}
+            else if(fromPMRad.isSelected()){fromSelected = fromPMRad.getText(); }
 
+            //Check if the 'to' radio buttons have been selected
             if(toAMRad.isSelected()){ toSelected = toAMRad.getText();}
-            else{toSelected = toPMRad.getText();}
+            else if(toPMRad.isSelected()){toSelected = toPMRad.getText();}
 
+            //Check if the text fields are empty
+            if(isEmpty(date, fromTime, toTime, day, fromSelected, toSelected)){
+                JOptionPane.showMessageDialog(this, "Please enter/select the room's availability");
+                return;
+            }
             addAvailability(date, fromTime, toTime, fromSelected, toSelected, day);
         }
         else if(actionEvent.getSource() == submitBtn){
-            //TODO: Checks to see if the text fields are empty or lists and buttons are not selected
+            //Get the room description values from the dialog
             String roomName = nameTxt.getText();
             String roomType = (String) typeCbo.getSelectedItem();
             String roomCapacity = capacityTxt.getText();
+
+            //Check if room capacity input is a numeric type
+            try{
+                int capacity = Integer.parseInt(roomCapacity);
+            }catch(NumberFormatException nfe){
+                JOptionPane.showMessageDialog(this, "Room capacity is not a numeric value");
+                return;
+            }
+            //Check if the room description value are empty
+            if(isEmpty(roomName, roomType, roomCapacity)){
+                JOptionPane.showMessageDialog(this, "Please enter room information");
+                return;
+            }
+            //Check if at least one availability timing has been set
+            if(availabilities.size() < 1){
+                JOptionPane.showMessageDialog(this, "Please enter at least one availability timing");
+                return;
+            }
 
             setRoomName(roomName);
             setRoomType(roomType);
