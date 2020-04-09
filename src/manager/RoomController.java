@@ -28,11 +28,11 @@ public class RoomController implements Observer {
     public void handleButtonEvent(RoomActionPanel actionPanel, ActionEvent event){
         Object eventSource = event.getSource();
         if(eventSource == actionPanel.getAddButton()){
-            //Add Room functionality
+            //Method call to add a new room to the system
             addRoom();
         }
         else if(eventSource == actionPanel.getRemoveButton()) {
-            //Remove Room functionality
+            //Method call to remove existing room from system
             removeRoom();
         }
         else if(eventSource == actionPanel.getAvailabilityButton()){
@@ -70,7 +70,16 @@ public class RoomController implements Observer {
     }
 
     private void removeRoom(){
-
+        //Get the selected row from the table
+        int selectedRow = GUI.getTableDisplayPanel().getSelectedRow();
+        if(selectedRow == -1){
+            JOptionPane.showMessageDialog(new JFrame(), "Please select a room to remove from the table");
+            return;
+        }
+        //Get the room name from the table
+        String roomName = (String) GUI.getTableDisplayPanel().getRoomName(selectedRow);
+        //Remove the room from the shared rooms data structure
+        sharedRooms.removeRoom(roomName);
     }
 
     private void manageAvailability(){
@@ -98,6 +107,21 @@ public class RoomController implements Observer {
 
                 //Add the rows to the table
                 GUI.getTableDisplayPanel().addRow(rowData);
+            }
+        }
+        else if(message[0].equals("Remove")){
+            //Get the total number of rows in the table
+            int rowCount = GUI.getTableDisplayPanel().getRowCount();
+            //For each row in the table
+            for(int i = 0; i < GUI.getTableDisplayPanel().getRowCount(); i++){
+                //Get the room name attached to the row
+                String name = (String) GUI.getTableDisplayPanel().getRoomName(i);
+                //if the room name in the row is equal to the name notified
+                if(name.equals(message[1])){
+                    //Remove it from the table
+                    GUI.getTableDisplayPanel().removeRow(i);
+                    i--;
+                }
             }
         }
 

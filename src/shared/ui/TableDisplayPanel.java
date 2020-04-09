@@ -28,9 +28,23 @@ public class TableDisplayPanel extends JPanel {
         tableModel.addRow(rowData);
     }
 
+    public int getSelectedRow(){
+        //Check if row is selected
+        return roomTable.getSelectedRow();
+    }
+
+    public Object getRoomName(int row){
+        return  tableModel.getValueAt(row, 0);
+    }
+
     public void removeRow(int index){
         tableModel.removeRow(index);
     }
+
+    public int getRowCount(){
+        return tableModel.getRowCount();
+    }
+
 
     public void clearTable(){
         tableModel.setRowCount(0);
