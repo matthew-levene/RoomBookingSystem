@@ -87,7 +87,18 @@ public class RoomController implements Observer {
         if(message[0].equals("Add")){
             //Get the room by key
             Room room = sharedRooms.getRoom((String) message[1]);
+            //Extract the room information into an array
+            for(Availability av : room.getAvailabilities()){
+                String  avTimings = av.getFromTime() + av.getFromTimeScale()
+                        + " - " + av.getToTime() + av.getToTimeScale();
+                Object[] rowData = {
+                        room.getRoomName(),
+                        room.getRoomType(),
+                        room.getRoomCapacity(), avTimings};
 
+                //Add the rows to the table
+                GUI.getTableDisplayPanel().addRow(rowData);
+            }
         }
 
 
