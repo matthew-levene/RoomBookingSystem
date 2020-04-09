@@ -205,16 +205,15 @@ public class AddRoomDialog extends JDialog implements ActionListener {
         roomCapacity = capacity;
     }
 
-    private String getRoomCapacity(){
+    public String getRoomCapacity(){
         return roomCapacity;
     }
 
 
     @Override
-    //TODO: Checks to see if the text fields are empty or lists and buttons are not selected
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource() == addBtn){
-
+            //TODO: Checks to see if the text fields are empty or lists and buttons are not selected
             String date = dateTxt.getText();
             String fromTime = availFromTxt.getText();
             String toTime = availToTxt.getText();
@@ -231,6 +230,7 @@ public class AddRoomDialog extends JDialog implements ActionListener {
             addAvailability(date, fromTime, toTime, fromSelected, toSelected, day);
         }
         else if(actionEvent.getSource() == submitBtn){
+            //TODO: Checks to see if the text fields are empty or lists and buttons are not selected
             String roomName = nameTxt.getText();
             String roomType = (String) typeCbo.getSelectedItem();
             String roomCapacity = capacityTxt.getText();
