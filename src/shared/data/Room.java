@@ -6,6 +6,7 @@ public class Room {
 
     private String roomName, roomType, roomCapacity;
     private ArrayList<Availability> availabilities;
+    private Unavailability unavailability;
 
     public Room(String name, String type, String capacity, ArrayList<Availability> availabilities){
         roomName = name;
@@ -27,4 +28,17 @@ public class Room {
     }
 
     public ArrayList<Availability> getAvailabilities() {return availabilities; }
+
+    public void setUnavailable(String reason, String time, String timescale){
+        unavailability = new Unavailability(reason, time, timescale);
+    }
+
+    public void setAvailable(){
+        unavailability = null;
+    }
+
+    public boolean isAvailable(){
+        if(unavailability == null){ return true; }
+        return false;
+    }
 }

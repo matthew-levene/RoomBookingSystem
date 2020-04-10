@@ -35,6 +35,12 @@ public class SharedRooms extends Observable {
         notifyObservers(new Object[]{"Remove", key});
     }
 
+    public void updateRoom(String key, Room room){
+        sharedRooms.replace(key, room);
+        setChanged();
+        notifyObservers(new Object[]{"Update", key});
+    }
+
     public synchronized Room getRoom(String key){
         if(sharedRooms.containsKey(key)){
             return sharedRooms.get(key);

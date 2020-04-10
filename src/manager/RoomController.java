@@ -1,11 +1,10 @@
 package manager;
 
 import manager.dialogs.AddRoomDialog;
+import manager.dialogs.AvailabilityDialog;
 import shared.data.Availability;
 import shared.data.Room;
 import shared.data.SharedRooms;
-import shared.ui.TableDisplayPanel;
-import shared.ui.TableSearchPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -36,8 +35,8 @@ public class RoomController implements Observer {
             removeRoom();
         }
         else if(eventSource == actionPanel.getAvailabilityButton()){
-            //Manage Availability functionality
-            manageAvailability();
+            //Method call to change the availability status of a room
+            manageRoomAvailability();
         }
         else {
             //Manage Term Dates functionality
@@ -82,13 +81,66 @@ public class RoomController implements Observer {
         sharedRooms.removeRoom(roomName);
     }
 
-    private void manageAvailability(){
+    private void manageRoomAvailability(){
+        //Get the selected row from the table
+        int selectedRow = GUI.getTableDisplayPanel().getSelectedRow();
+        //If selected row is equal to -1
+        if(selectedRow == -1){
+            JOptionPane.showMessageDialog(new JFrame(), "Please select a room to remove from the table");
+            return;
+        }
+        //Get the room name from the selected row
+        String roomName = (String) GUI.getTableDisplayPanel().getRoomName(selectedRow);
+
+        //Open the availability dialog window
+        AvailabilityDialog availWindow = new AvailabilityDialog();
+
+        switch(availWindow.getAction()){
+            ////Request to make room available was selected
+            case 0:
+                break;
+            //Request to make room unavailable was selected
+            case 1:
+
+                //Get the room unavailability information
+                String reason = availWindow.getReason();
+                String time = availWindow.getTimeframe();
+                String timeFrame = availWindow.getTimeframeSelection();
+
+                //Get the room from the shared data structure
+                Room room = sharedRooms.getRoom(roomName);
+                room.setUnavailable(reason,time,timeFrame);
+
+                //Replace the room in the data strucutre
+                sharedRooms.updateRoom(roomName, room);
+
+                break;
+        }
+
 
     }
+
 
     private void setTermDates(){
 
     }
+
+    private void updateDisplayTable(Object[] message){
+        //Get the total number of rows in the table
+        int rowCount = GUI.getTableDisplayPanel().getRowCount();
+        //For each row in the table
+        for(int i = 0; i < GUI.getTableDisplayPanel().getRowCount(); i++){
+            //Get the room name attached to the row
+            String name = (String) GUI.getTableDisplayPanel().getRoomName(i);
+            //if the room name in the row is equal to the name notified
+            if(name.equals(message[1])){
+                //Remove it from the table
+                GUI.getTableDisplayPanel().removeRow(i);
+                i--;
+            }
+        }
+    }
+
 
     @Override
     public void update(Observable observable, Object o) {
@@ -110,23 +162,14 @@ public class RoomController implements Observer {
             }
         }
         else if(message[0].equals("Remove")){
-            //Get the total number of rows in the table
-            int rowCount = GUI.getTableDisplayPanel().getRowCount();
-            //For each row in the table
-            for(int i = 0; i < GUI.getTableDisplayPanel().getRowCount(); i++){
-                //Get the room name attached to the row
-                String name = (String) GUI.getTableDisplayPanel().getRoomName(i);
-                //if the room name in the row is equal to the name notified
-                if(name.equals(message[1])){
-                    //Remove it from the table
-                    GUI.getTableDisplayPanel().removeRow(i);
-                    i--;
-                }
-            }
+            /* Update the TableDisplayPanel to remove
+            * any entries containing the same room name*/
+            updateDisplayTable(message);
         }
-
-
+        else if(message[0].equals("Update")){
+            /* Update the TableDisplayPanel to remove
+             * any entries containing the same room name*/
+            updateDisplayTable(message);
+        }
     }
-
-
 }
