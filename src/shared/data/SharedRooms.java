@@ -36,6 +36,7 @@ public class SharedRooms extends Observable {
     }
 
     public void updateRoom(String key, Room room){
+        //TODO implement update for booking clerk
         sharedRooms.replace(key, room);
         setChanged();
         notifyObservers(new Object[]{"Update", key});
