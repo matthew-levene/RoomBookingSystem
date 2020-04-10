@@ -37,6 +37,10 @@ public class Room {
         unavailability = null;
     }
 
+    public Unavailability getUnavailability(){
+        return unavailability;
+    }
+
     public boolean isAvailable(){
         if(unavailability == null){ return true; }
         return false;
