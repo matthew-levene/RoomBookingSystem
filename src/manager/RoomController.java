@@ -179,7 +179,7 @@ public class RoomController implements Observer {
             GUI.getTableDisplayPanel().addRow(rowData);
         }
     }
-    private void removeFromUnavailablilityTable(Object[] message){
+    private void removeFromUnavailabilityTable(Object[] message){
         for(int i = 0; i < GUI.getTableDisplayPanel().getUnavailRowCount(); i++){
             if(GUI.getTableDisplayPanel().getUnavailRoomName(i).equals(message[1]))
             {
@@ -219,7 +219,7 @@ public class RoomController implements Observer {
             //Get the room object
             Room room = sharedRooms.getRoom((String) message[1]);
 
-            //If message contains request to display room as available
+            //Message contained requested to change room state: Available -> Unavailable
             if (message[2].equals("Available")) {
                 //If the room is not available
                 if (!room.isAvailable()) {
@@ -229,14 +229,14 @@ public class RoomController implements Observer {
                     addToUnavailabilityTable(message, unav);
                 }
             }
-            //Message contained request to display room as available
+            //Message contained request to change room state: Unavilable -> Available
             else if(message[2].equals("Unavailable")){
                 //If the room is available
                 if (room.isAvailable()) {
                     //Write the availability information to the available rooms table
                     addToAvailabilityTable(room);
                     //Remove the room entry from the unavailable rooms table
-                    removeFromUnavailablilityTable(message);
+                    removeFromUnavailabilityTable(message);
                 }
             }
         }
