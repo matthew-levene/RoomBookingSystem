@@ -6,7 +6,6 @@ import java.util.Observable;
 public class SharedRooms extends Observable {
     private static SharedRooms instance;
     private HashMap<String, Room> sharedRooms;
-    private Object[] notification = new Object[2];
 
     private SharedRooms(){
         sharedRooms = new HashMap<>();
@@ -35,11 +34,11 @@ public class SharedRooms extends Observable {
         notifyObservers(new Object[]{"Remove", key});
     }
 
-    public void updateRoom(String key, Room room){
+    public void updateRoom(String key, Room room, String action){
         //TODO implement update for booking clerk
         sharedRooms.replace(key, room);
         setChanged();
-        notifyObservers(new Object[]{"Update", key});
+        notifyObservers(new Object[]{"Update", key, action});
     }
 
     public synchronized Room getRoom(String key){
