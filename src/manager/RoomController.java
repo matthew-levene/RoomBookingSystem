@@ -5,6 +5,7 @@ import manager.dialogs.AvailabilityDialog;
 import shared.data.Availability;
 import shared.data.Room;
 import shared.data.SharedRooms;
+import shared.data.Unavailability;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -82,15 +83,34 @@ public class RoomController implements Observer {
     }
 
     private void manageRoomAvailability(){
-        //Get the selected row from the table
-        int selectedRow = GUI.getTableDisplayPanel().getSelectedRow();
-        //If selected row is equal to -1
-        if(selectedRow == -1){
-            JOptionPane.showMessageDialog(new JFrame(), "Please select a room to remove from the table");
-            return;
+        //Get the title of the tab selected
+        String tabTitle = GUI.getTableDisplayPanel().getTabTitle();
+        String roomName;
+        int selectedRow;
+        if(tabTitle.equals("Available")){
+            //Get the selected row from the available table
+            selectedRow = GUI.getTableDisplayPanel().getSelectedRow();
+            //If a row is not selected
+            if(selectedRow == -1){
+                //Show error message to user
+                JOptionPane.showMessageDialog(new JFrame(), "Please select a row from the table");
+                return;
+            }
+            //Get the room name from the selected row
+            roomName = (String) GUI.getTableDisplayPanel().getRoomName(selectedRow);
         }
-        //Get the room name from the selected row
-        String roomName = (String) GUI.getTableDisplayPanel().getRoomName(selectedRow);
+        else{
+            //Get the selected row from the unavailable rooms table
+            selectedRow = GUI.getTableDisplayPanel().getSelectedUnavailRow();
+            //If a row is not selected
+            if(selectedRow == -1){
+                //Show error message to user
+                JOptionPane.showMessageDialog(new JFrame(), "Please select a row from the table");
+                return;
+            }
+            //Get the room name from the selected row
+            roomName = (String) GUI.getTableDisplayPanel().getUnavailRoomName(selectedRow);
+        }
 
         //Open the availability dialog window
         AvailabilityDialog availWindow = new AvailabilityDialog();
@@ -98,9 +118,17 @@ public class RoomController implements Observer {
         switch(availWindow.getAction()){
             ////Request to make room available was selected
             case 0:
+                //If the tab title is available, then return
+                if(tabTitle.equals("Available")) return;
+
+                //TODO - Implement functionality to make room available
+                // Get the room, update it to available, update the room
+                // Handle notification on update() -- Where observers will access
                 break;
             //Request to make room unavailable was selected
             case 1:
+                //if the tab title is unavailable, then return
+                if(tabTitle.equals("Unavailable")) return;
 
                 //Get the room unavailability information
                 String reason = availWindow.getReason();
@@ -113,11 +141,8 @@ public class RoomController implements Observer {
 
                 //Replace the room in the data strucutre
                 sharedRooms.updateRoom(roomName, room);
-
                 break;
         }
-
-
     }
 
 
@@ -170,6 +195,24 @@ public class RoomController implements Observer {
             /* Update the TableDisplayPanel to remove
              * any entries containing the same room name*/
             updateDisplayTable(message);
+
+            //Get the room object that was changed
+            Room room = sharedRooms.getRoom((String) message[1]);
+            //If the room is unavailable
+            if(!room.isAvailable()) {
+                //Get the unavailability object
+                Unavailability unav = room.getUnavailability();
+                //Add the room unavailability information to the unavailable rooms table
+                GUI.getTableDisplayPanel().addUnavailRow(new Object[]{
+                        message[1], unav.getReason(),
+                        unav.getTime()  + " " + unav.getTimescale()
+                });
+
+            }
+
+
+
+
         }
     }
 }
