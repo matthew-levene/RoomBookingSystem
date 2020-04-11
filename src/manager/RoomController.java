@@ -185,14 +185,16 @@ public class RoomController implements Observer {
     }
     private void addToAvailabilityTable(Room room){
         for (Availability av : room.getAvailabilities()) {
-            String avTimings = av.getFromTime() + av.getFromTimeScale()
-                    + " - " + av.getToTime() + av.getToTimeScale();
-            Object[] rowData = {
-                    room.getRoomName(),
-                    room.getRoomType(),
-                    room.getRoomCapacity(), avTimings};
+            if(av.isAvailable()) {
+                String avTimings = av.getFromTime() + av.getFromTimeScale()
+                        + " - " + av.getToTime() + av.getToTimeScale();
+                Object[] rowData = {
+                        room.getRoomName(),
+                        room.getRoomType(),
+                        room.getRoomCapacity(), avTimings};
 
-            GUI.getTableDisplayPanel().addRow(rowData);
+                GUI.getTableDisplayPanel().addRow(rowData);
+            }
         }
     }
     private void removeFromUnavailabilityTable(Object[] message){
