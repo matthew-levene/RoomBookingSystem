@@ -171,8 +171,6 @@ public class RoomController implements Observer {
     }
 
     private void removeFromAvailabilityTable(Object[] message) {
-        //Get the total number of rows in the table
-        int rowCount = GUI.getTableDisplayPanel().getRowCount();
         //For each row in the table
         for (int i = 0; i < GUI.getTableDisplayPanel().getRowCount(); i++) {
             //Get the room name attached to the row

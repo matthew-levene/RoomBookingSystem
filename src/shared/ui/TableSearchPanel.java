@@ -1,20 +1,16 @@
 package shared.ui;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 public class TableSearchPanel extends JPanel {
 
     private JList<String> roomTypeList;
-    private DefaultListModel<String> roomTypes;
     private JCheckBox morningChk, eveningChk;
-    private JComboBox<String> daySelection;
     private JButton searchBtn;
-
+    private JTextField dateTxt;
+    private JLabel dateLbl;
     private GridBagConstraints cons;
 
     public TableSearchPanel(){
@@ -25,17 +21,17 @@ public class TableSearchPanel extends JPanel {
         morningChk = new JCheckBox("AM");
         eveningChk = new JCheckBox("PM");
 
-        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-        daySelection = new JComboBox<>(days);
-
         searchBtn = new JButton("Search");
+
+        dateLbl = new JLabel("Date:");
+        dateTxt = new JTextField(5);
 
         drawUI();
     }
 
     private void drawUI(){
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createTitledBorder("Search"));
+        setBorder(BorderFactory.createTitledBorder("Room Search"));
         cons = new GridBagConstraints();
         cons.weighty = 0.1;
         cons.weighty = 0.1;
@@ -58,14 +54,19 @@ public class TableSearchPanel extends JPanel {
 
         cons.gridx = 2;
         cons.gridy = 0;
-        cons.insets = new Insets(5,5,5,0);
+        cons.insets = new Insets(5,5,5,5);
         add(eveningChk, cons);
 
         cons.gridwidth = 2;
-        //Add the day selection control
+
+        //Add the date controls
         cons.gridx = 1;
         cons.gridy = 1;
-        add(daySelection, cons);
+        add(dateLbl, cons);
+
+        cons.gridx = 2;
+        cons.gridy = 1;
+        add(dateTxt, cons);
 
         //Add the search button
         cons.gridx = 1;

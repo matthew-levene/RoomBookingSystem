@@ -14,7 +14,7 @@ public class AddRoomDialog extends JDialog implements ActionListener {
 
     private JLabel nameLbl, typeLbl, capacityLbl, availFromLbl, availToLbl, availLbl, dateLbl;
     private JTextField nameTxt, capacityTxt, availFromTxt, availToTxt, dateTxt;
-    private JComboBox<String> typeCbo, dayCbo;
+    private JComboBox<String> typeCbo;
     private JRadioButton fromAMRad, toAMRad, fromPMRad, toPMRad;
     private JButton addBtn, submitBtn, cancelBtn;
     private ButtonGroup fromBtnGroup, toBtnGroup;
@@ -54,9 +54,6 @@ public class AddRoomDialog extends JDialog implements ActionListener {
         //Initialise combo boxes and their options
         String[] types = {"Computer Lab", "Tutorial Room", "Lecture Theatre"};
         typeCbo = new JComboBox<>(types);
-
-        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-        dayCbo = new JComboBox<>(days);
 
         //Initialse Radio Buttons and their Button Groups
         fromAMRad = new JRadioButton("AM");
@@ -140,8 +137,6 @@ public class AddRoomDialog extends JDialog implements ActionListener {
         add(fromAMRad, cons);
         cons.gridx = 3;
         add(fromPMRad, cons);
-        cons.gridx = 4;
-        add(dayCbo, cons);
 
         //Add the to availability row
         cons.gridx = 0;
@@ -174,7 +169,7 @@ public class AddRoomDialog extends JDialog implements ActionListener {
         return action;
     }
 
-    private void addAvailability(String date, String from, String to, String fromSelected, String toSelected, String day){
+    private void addAvailability(String date, String from, String to, String fromSelected, String toSelected){
         for(Availability av : availabilities){
             //Check if the availability is set for the same date
            if(av.getDate().equals(date)){
@@ -192,7 +187,7 @@ public class AddRoomDialog extends JDialog implements ActionListener {
            }
         }
 
-        availabilities.add(new Availability(date, from, to, fromSelected, toSelected, day));
+        availabilities.add(new Availability(date, from, to, fromSelected, toSelected));
     }
 
     public ArrayList<Availability> getAvailability(){
@@ -250,7 +245,6 @@ public class AddRoomDialog extends JDialog implements ActionListener {
             String toTime = availToTxt.getText();
             String fromSelected = "";
             String toSelected = "";
-            String day = (String) dayCbo.getSelectedItem();
 
             //Check if the 'from' radio buttons have been selected
             if(fromAMRad.isSelected()){ fromSelected = fromAMRad.getText(); }
@@ -266,8 +260,8 @@ public class AddRoomDialog extends JDialog implements ActionListener {
                 return;
             }
             //Check if the text fields are empty
-            if(isEmpty(date, fromTime, toTime, day, fromSelected, toSelected)){
-                JOptionPane.showMessageDialog(this, "Please enter/select the room's availability");
+            if(isEmpty(date, fromTime, toTime, fromSelected, toSelected)){
+                JOptionPane.showMessageDialog(this, "Please enter the room's availability");
                 return;
             }
 
@@ -278,7 +272,7 @@ public class AddRoomDialog extends JDialog implements ActionListener {
                 return;
             }
             //Add to availability array
-            addAvailability(date, fromTime, toTime, fromSelected, toSelected, day);
+            addAvailability(date, fromTime, toTime, fromSelected, toSelected);
         }
         else if(actionEvent.getSource() == submitBtn){
             //Get the room description values from the dialog
