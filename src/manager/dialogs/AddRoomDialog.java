@@ -198,24 +198,12 @@ public class AddRoomDialog extends JDialog implements ActionListener {
         availabilities.clear();
     }
 
-    private void setRoomName(String name){
-        roomName = name;
-    }
-
     public String getRoomName(){
         return roomName;
     }
 
-    private void setRoomType(String type){
-        roomType = type;
-    }
-
     public String getRoomType(){
         return roomType;
-    }
-
-    private void setRoomCapacity(String capacity){
-        roomCapacity = capacity;
     }
 
     public String getRoomCapacity(){
@@ -271,14 +259,34 @@ public class AddRoomDialog extends JDialog implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Date entered is not valid, date must be dd-mm-yyyy or dd-mm-yy");
                 return;
             }
-            //Add to availability array
-            addAvailability(date, fromTime, toTime, fromSelected, toSelected);
+
+            //Check if 'from' and 'to' text fields are numeric
+            try{
+                Integer.parseInt(fromTime);
+                Integer.parseInt(toTime);
+            }catch(NumberFormatException numberFormatException){
+                JOptionPane.showMessageDialog(this, "'From' or 'To' values are not numeric");
+                return;
+            }
+            //Check that the 'from' and 'to' values are greater than 0 and less than 12
+            int fTime = Integer.parseInt(fromTime);
+            int tTime = Integer.parseInt(toTime);
+            if((fTime >= 1 && fTime <= 12) && (tTime >= 1 && tTime <= 24)){
+                //Add to availability array
+                addAvailability(date, fromTime, toTime, fromSelected, toSelected);
+            }
+            else{
+                JOptionPane.showMessageDialog(
+                        this,
+                        "From and To values must be between 1 and 24");
+                return;
+            }
         }
         else if(actionEvent.getSource() == submitBtn){
             //Get the room description values from the dialog
-            String roomName = nameTxt.getText();
-            String roomType = (String) typeCbo.getSelectedItem();
-            String roomCapacity = capacityTxt.getText();
+            roomName = nameTxt.getText();
+            roomType = (String) typeCbo.getSelectedItem();
+            roomCapacity = capacityTxt.getText();
 
             //Check if room capacity input is a numeric type
             try{
@@ -297,18 +305,13 @@ public class AddRoomDialog extends JDialog implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please enter at least one availability timing");
                 return;
             }
-
-            setRoomName(roomName);
-            setRoomType(roomType);
-            setRoomCapacity(roomCapacity);
+            //Set the action to 1
             setAction(1);
             //Close the window
             this.dispose();
-
         }
         else{
             //Cancel button was pressed
-            setAction(0);
             resetAvailability();
             this.dispose();
         }
