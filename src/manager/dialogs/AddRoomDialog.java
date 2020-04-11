@@ -212,9 +212,7 @@ public class AddRoomDialog extends JDialog implements ActionListener {
 
     public boolean isEmpty(String ... args){
         for(String value : args){
-            if(value.isEmpty()){
-                return true;
-            }
+            if(value.isEmpty()) return true;
         }
         return false;
     }
