@@ -1,5 +1,7 @@
 package manager.dialogs;
 
+import utils.DateUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,6 +12,9 @@ public class TermDatesDialog extends JDialog implements ActionListener {
     private JLabel firstTermLbl, scndTermLbl, startLbl1, startLbl2, endLbl1, endLbl2;
     private JTextField firstStartTxt, firstEndTxt, scndStartTxt, scndEndTxt;
     private JButton submitBtn, cancelBtn;
+
+    private String firstStartDate, firstEndDate, scndStartDate, scndEndDate;
+    private int action;
 
     public TermDatesDialog(){
         super(new JDialog(), "Set Term Dates Dialog", true);
@@ -100,9 +105,77 @@ public class TermDatesDialog extends JDialog implements ActionListener {
         add(cancelBtn, cons);
     }
 
+    public String getFirstStartDate() {
+        return firstStartDate;
+    }
+
+    public String getFirstEndDate() {
+        return firstEndDate;
+    }
+
+    public String getScndStartDate() {
+        return scndStartDate;
+    }
+
+    public String getScndEndDate() {
+        return scndEndDate;
+    }
+
+    public int getAction() {
+        return action;
+    }
+
+    public void setAction(int action){
+        this.action = action;
+    }
+
+    public boolean isEmpty(String ... args){
+        for(String value : args){
+            if(value.isEmpty()) return true;
+         }
+        return false;
+    }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        if(actionEvent.getSource() == submitBtn){
+            //Get the input from the text fields
+            firstStartDate = firstStartTxt.getText();
+            firstEndDate = firstEndTxt.getText();
+            scndStartDate = scndStartTxt.getText();
+            scndEndDate = scndEndTxt.getText();
 
+            //check if the input is empty
+            if(isEmpty(firstStartDate, firstEndDate, scndEndDate, scndEndDate)){
+               JOptionPane.showMessageDialog(this, "Please enter input into the term date fields");
+               return;
+            }
+
+            //Check if the inputs are in a valid format (dd/MM/yyyy)
+            boolean areDatesValid = DateUtils.areValidDates(firstStartDate, firstEndDate, scndStartDate, scndEndDate);
+            if(!areDatesValid){
+                JOptionPane.showMessageDialog(this,"Dates entered are not valid, dates must be in format dd/mm/yyyy");
+                return;
+            }
+
+            //Check if the input dates are in linear order
+            // e.g. second end date doesn't come before first start date
+            boolean isOrderValid = DateUtils.isValidDateOrder(firstStartDate, firstEndDate, scndStartDate, scndEndDate);
+            if(!isOrderValid){
+                JOptionPane.showMessageDialog(this, "Dates are not in linear order");
+                return;
+            }
+
+            //Set the action equal to one
+            setAction(1);
+
+            //Close dialog window
+            this.dispose();
+        }
+        //Cancel button was pressed
+        else{
+            //Close dialog window
+            this.dispose();
+        }
     }
 }
