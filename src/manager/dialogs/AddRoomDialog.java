@@ -2,6 +2,7 @@ package manager.dialogs;
 
 import javafx.scene.control.RadioButton;
 import shared.data.Availability;
+import utils.DateUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -173,8 +174,24 @@ public class AddRoomDialog extends JDialog implements ActionListener {
         return action;
     }
 
-    //TODO: Check to ensure that there are no duplicate availabilities
     private void addAvailability(String date, String from, String to, String fromSelected, String toSelected, String day){
+        for(Availability av : availabilities){
+            //Check if the availability is set for the same date
+           if(av.getDate().equals(date)){
+               //Check if the availability is set for the same time
+               if(av.getFromTime().equals(from) && av.getToTime().equals(to)){
+                   //Check if the AM/PM availability selections are the same
+                   if(av.getFromTimeScale().equals(fromSelected) && av.getToTimeScale().equals(toSelected)){
+                           //Availability object already exists in the array
+                           JOptionPane.showMessageDialog(
+                                   this,
+                                   "Could not add availability, availability already exists");
+                           return;
+                   }
+               }
+           }
+        }
+
         availabilities.add(new Availability(date, from, to, fromSelected, toSelected, day));
     }
 
@@ -210,11 +227,19 @@ public class AddRoomDialog extends JDialog implements ActionListener {
         return roomCapacity;
     }
 
-    public boolean isEmpty(String ... args){
+    private boolean isEmpty(String ... args){
         for(String value : args){
             if(value.isEmpty()) return true;
         }
         return false;
+    }
+
+    private int isSelected(JRadioButton ... rads){
+        int selectedCount = 0;
+        for(JRadioButton rad : rads){
+            if(!rad.isSelected()){ selectedCount++; }
+        }
+        return selectedCount;
     }
 
     @Override
@@ -235,11 +260,24 @@ public class AddRoomDialog extends JDialog implements ActionListener {
             if(toAMRad.isSelected()){ toSelected = toAMRad.getText();}
             else if(toPMRad.isSelected()){toSelected = toPMRad.getText();}
 
+            //Check if all radio buttons are unselected
+            if(isSelected(fromAMRad, fromPMRad, toAMRad, toPMRad) == 4){
+                JOptionPane.showMessageDialog(this, "Please select a radio button");
+                return;
+            }
             //Check if the text fields are empty
             if(isEmpty(date, fromTime, toTime, day, fromSelected, toSelected)){
                 JOptionPane.showMessageDialog(this, "Please enter/select the room's availability");
                 return;
             }
+
+            //Check if date is valid
+            boolean dateValid = DateUtils.areValidDates(date);
+            if(!dateValid){
+                JOptionPane.showMessageDialog(this, "Date entered is not valid, date must be dd-mm-yyyy or dd-mm-yy");
+                return;
+            }
+            //Add to availability array
             addAvailability(date, fromTime, toTime, fromSelected, toSelected, day);
         }
         else if(actionEvent.getSource() == submitBtn){
@@ -250,7 +288,7 @@ public class AddRoomDialog extends JDialog implements ActionListener {
 
             //Check if room capacity input is a numeric type
             try{
-                int capacity = Integer.parseInt(roomCapacity);
+                Integer.parseInt(roomCapacity);
             }catch(NumberFormatException nfe){
                 JOptionPane.showMessageDialog(this, "Room capacity is not a numeric value");
                 return;
