@@ -11,6 +11,7 @@ public class Availability {
         toTime = to;
         fromTimeScale = fromSelected; //Stores whether AM/PM was selected from the 'from' time
         toTimeScale = toSelected; //Stores whether AM/PM was selected from the 'to' time
+        isAvailable = true; //isAvailable starts as true by default
     }
 
     public String getDate(){
@@ -33,7 +34,7 @@ public class Availability {
         return toTimeScale;
     }
 
-    public void setAvailable(){ isAvailable = true; }
+    public void setAvailability(boolean option){ isAvailable = option; }
 
     public boolean isAvailable(){ return isAvailable; }
 
