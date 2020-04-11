@@ -54,7 +54,6 @@ public class RoomController implements Observer {
             String type = addRoomWindow.getRoomType();
             String capacity = addRoomWindow.getRoomCapacity();
 
-            //TODO check if room already exists in data structure using roomname key
             if (sharedRooms.keyExists(name)) {
                 JOptionPane.showMessageDialog(
                         new JFrame(),
@@ -125,7 +124,6 @@ public class RoomController implements Observer {
                 //Replace the room in the data structure
                 sharedRooms.updateRoom(roomName, r, tabTitle);
 
-                // TODO Handle notification on update() -- Where observers will access
                 break;
             //Request to make room unavailable was selected
             //Room state transition: Available -> Unavailable
