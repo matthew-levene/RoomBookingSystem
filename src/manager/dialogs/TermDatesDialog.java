@@ -151,10 +151,10 @@ public class TermDatesDialog extends JDialog implements ActionListener {
                return;
             }
 
-            //Check if the inputs are in a valid format (dd/MM/yyyy)
+            //Check if the inputs are in a valid format: dd/mm/yy or dd/mm/yyyy
             boolean areDatesValid = DateUtils.areValidDates(firstStartDate, firstEndDate, scndStartDate, scndEndDate);
             if(!areDatesValid){
-                JOptionPane.showMessageDialog(this,"Dates entered are not valid, dates must be in format dd/mm/yyyy");
+                JOptionPane.showMessageDialog(this,"Dates entered are not valid, dates must be in format dd-mm-yyyy or dd-mm-yy");
                 return;
             }
 

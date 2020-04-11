@@ -6,11 +6,11 @@ import java.util.Date;
 
 public class DateUtils {
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
-    public static final boolean areValidDates(String ... dates){
+    public static boolean areValidDates(String ... dates){
         for(String date : dates){
-            //If the date parses successfully, then continue
+            //Try parse the date string into a Date object
             try{ dateFormat.parse(date); }
             catch(ParseException parseException){
                 //If the date is not in a valid format, return false
@@ -21,7 +21,7 @@ public class DateUtils {
         return true;
     }
 
-    public static final boolean isValidDateOrder(String firstStart, String firstEnd, String secondStart, String secondEnd){
+    public static  boolean isValidDateOrder(String firstStart, String firstEnd, String secondStart, String secondEnd){
         Date firStart, firEnd, secStart, secEnd;
         try{
              firStart = dateFormat.parse(firstStart);
