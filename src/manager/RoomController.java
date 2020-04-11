@@ -2,10 +2,8 @@ package manager;
 
 import manager.dialogs.AddRoomDialog;
 import manager.dialogs.AvailabilityDialog;
-import shared.data.Availability;
-import shared.data.Room;
-import shared.data.SharedRooms;
-import shared.data.Unavailability;
+import manager.dialogs.TermDatesDialog;
+import shared.data.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,11 +14,14 @@ import java.util.Observer;
 public class RoomController implements Observer {
 
     private SharedRooms sharedRooms;
+    private SharedTermDates sharedTermDates;
     private RoomManagerUI GUI;
 
     public RoomController(RoomManagerUI GUI) {
         sharedRooms = SharedRooms.getInstance();
         sharedRooms.addObserver(this);
+
+        sharedTermDates = SharedTermDates.getInstance();
 
         this.GUI = GUI;
     }
@@ -37,7 +38,7 @@ public class RoomController implements Observer {
             //Method call to change the availability status of a room
             manageRoomAvailability();
         } else {
-            //Manage Term Dates functionality
+            //Method call to set the term dates in the system
             setTermDates();
         }
     }
@@ -149,6 +150,25 @@ public class RoomController implements Observer {
     }
 
     private void setTermDates() {
+        //Open the term dates dialog
+        TermDatesDialog termDatesWindow = new TermDatesDialog();
+
+        //If the action is equal to 1
+        if(termDatesWindow.getAction() == 1){
+            String firstStart, firstEnd, secondStart, secondEnd;
+
+            //Get the term dates from the window
+            firstStart = termDatesWindow.getFirstStartDate();
+            firstEnd = termDatesWindow.getFirstEndDate();
+            secondStart = termDatesWindow.getScndStartDate();
+            secondEnd = termDatesWindow.getScndEndDate();
+
+            //Add a first term
+            sharedTermDates.addTermDate(new TermDate(firstStart, firstEnd));
+            //Add a second term
+            sharedTermDates.addTermDate(new TermDate(secondStart, secondEnd));
+        }
+
 
     }
 
