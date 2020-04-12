@@ -2,6 +2,7 @@ package shared.data;
 
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.Set;
 
 public class SharedRooms extends Observable {
     private static SharedRooms instance;
@@ -46,5 +47,9 @@ public class SharedRooms extends Observable {
             return sharedRooms.get(key);
         }
         return null;
+    }
+
+    public Set<String> getKeys(){
+        return sharedRooms.keySet();
     }
 }
