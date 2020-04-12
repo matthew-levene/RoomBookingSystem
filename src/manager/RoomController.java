@@ -6,6 +6,7 @@ import manager.dialogs.TermDatesDialog;
 import shared.data.*;
 import utils.DateUtils;
 
+import javax.print.DocFlavor;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
@@ -40,6 +41,11 @@ public class RoomController implements Observer {
 
         //Get the date from the date text field
         String searchDate = GUI.getTableSearchPanel().getDate();
+
+        if(searchDate.isEmpty()){
+            JOptionPane.showMessageDialog(new JFrame(), "Please enter a date value in format dd/mm/yyyy or dd/mm/yy");
+            return;
+        }
         //Check if the date is in a valid format e.g. dd-mm-yyyy
         boolean dateValid = DateUtils.areValidDates(searchDate);
         if(!dateValid){
@@ -48,52 +54,24 @@ public class RoomController implements Observer {
                     "Date entered must be in the format of dd-mm-yyyy or dd-mm-yy");
             return;
         }
+
         //Check if the date is before or during the term in shared term dates
         TermDate termDate = sharedTermDates.peekAtTermDate();
         Date sDate = DateUtils.toDate(searchDate);
-
         //Get a list of keys from the shared room data structure
         Set<String> keys = sharedRooms.getKeys();
+        //Clear the availability table
+        GUI.getTableDisplayPanel().clearAvailabilityTable();
 
         //If search date is before term starts or after term ends (holidays)
-        if(sDate.before(termDate.getStartDate()) || sDate.after(termDate.getEndDate())){ }
-        //Else if search date is after term starts and before term ends (term-time)
+        if(sDate.before(termDate.getStartDate()) || sDate.after(termDate.getEndDate())){
+            findMatchesInHolidays(keys, roomType, searchDate);
+        }
+        //If search date is after term starts and before term ends (term-time)
         else if(sDate.after(termDate.getStartDate()) && sDate.before(termDate.getEndDate())){
-            //Clear the availability table
-            GUI.getTableDisplayPanel().clearAvailabilityTable();
-            //For each key in the shared rooms structure
-            for(String key : keys){
-                //Get the room
-                Room room = sharedRooms.getRoom(key);
-                //If the room is available
-                if(room.isAvailable()){
-                    //Check if the room type matches the selected room type
-                    if(room.getRoomType().equals(roomType)) {
-                        //Get the availabilities from the room
-                        ArrayList<Availability> availabilities = room.getAvailabilities();
-                        for (Availability av : availabilities) {
-                            //If the availability is availability
-                            if (av.isAvailable()) {
-                                //If the availability is from PM - PM
-                                if (av.getFromTimeScale().equals("PM") && av.getToTimeScale().equals("PM")) {
-                                    //Add the entry to the availability table
-                                    GUI.getTableDisplayPanel().addRow(
-                                            new Object[]{room.getRoomName(), room.getRoomType(), room.getRoomCapacity(),
-                                                    av.getFromTime() + av.getFromTimeScale() + " - " + av.getToTime() + av.getToTimeScale()
-                                            }
-                                    );
-                                }
-                            }
-                        }
-                    }
-                    //Prompt user that due to term time, only PM availabilities are only avaialble
-                    JOptionPane.showMessageDialog(new JFrame(), "Search date is within term time. \n Only PM availability slots are available");
-                }
-
-            }
+            findMatchesInTerm(keys, roomType, searchDate);
         }
     }
-
     public void handleButtonEvent(RoomActionPanel actionPanel, ActionEvent event) {
         Object eventSource = event.getSource();
         if (eventSource == actionPanel.getAddButton()) {
@@ -110,7 +88,6 @@ public class RoomController implements Observer {
             setTermDates();
         }
     }
-
     private void addRoom() {
         AddRoomDialog addRoomWindow = new AddRoomDialog();
         //If the action is equal to one, the submit button was pressed
@@ -281,6 +258,78 @@ public class RoomController implements Observer {
                 message[1], unav.getReason(),
                 unav.getTime() + " " + unav.getTimescale()
         });
+    }
+
+    //TODO Also implement method for BookingController
+    private void findMatchesInTerm(Set<String> keys, String roomType, String searchDate){
+        //For each key in the shared rooms structure
+        for(String key : keys){
+            //Get the room
+            Room room = sharedRooms.getRoom(key);
+            //If the room is available
+            if(room.isAvailable()){
+                //Check if the room type matches the selected room type
+                if(room.getRoomType().equals(roomType)) {
+                    for (Availability av : room.getAvailabilities()) {
+                        //If the availability is available
+                        if (av.isAvailable() && (av.getDate().equals(searchDate))) {
+                            //If the availability is from PM - PM
+                            if (av.getFromTimeScale().equals("PM") && av.getToTimeScale().equals("PM")) {
+                                //Add the entry to the availability table
+                                String avail = av.getFromTime() + av.getFromTimeScale() + " - " + av.getToTime() + av.getToTimeScale();
+                                GUI.getTableDisplayPanel().addRow(
+                                        new Object[]{room.getRoomName(), room.getRoomType(), room.getRoomCapacity(), avail }
+                                );
+                            }
+                        }
+                    }
+                }
+                //Prompt user that due to term time, only PM availabilities are only available
+                JOptionPane.showMessageDialog(new JFrame(), "Search date is within term time. \n Only PM availability slots are available");
+            }
+        }
+    }
+    private void findMatchesInHolidays(Set<String> keys, String roomType, String searchDate){
+        //Find out which checkboxes were selected
+        boolean isAMChecked = GUI.getTableSearchPanel().isAMSelected();
+        boolean isPMChecked = GUI.getTableSearchPanel().isPMSelected();
+
+        for(String key : keys) {
+            //Get the room
+            Room room = sharedRooms.getRoom(key);
+            //Check if the room is available
+            if (room.isAvailable()) {
+                //Check if the room type matches the selected room type
+                if (room.getRoomType().equals(roomType)) {
+                    for (Availability av : room.getAvailabilities()) {
+                        //If the availability is available
+                        if (av.isAvailable() && (av.getDate().equals(searchDate))) {
+                            //If both AM and PM are checked
+                            if((isAMChecked && isPMChecked)){
+                                String avail = av.getFromTime() + av.getFromTimeScale() + " - " + av.getToTime() + av.getToTimeScale();
+                                GUI.getTableDisplayPanel().addRow(
+                                        new Object[]{room.getRoomName(), room.getRoomType(), room.getRoomCapacity(), avail }
+                                );
+                            }
+                            //If only AM is selected, //Get availabilities starting from AM
+                            else if(isAMChecked && av.getFromTimeScale().equals("AM")){
+                                String avail = av.getFromTime() + av.getFromTimeScale() + " - " + av.getToTime() + av.getToTimeScale();
+                                GUI.getTableDisplayPanel().addRow(
+                                        new Object[]{room.getRoomName(), room.getRoomType(), room.getRoomCapacity(), avail }
+                                );
+                            }
+                            else if(isPMChecked && av.getFromTimeScale().equals("PM")){
+                                String avail = av.getFromTime() + av.getFromTimeScale() + " - " + av.getToTime() + av.getToTimeScale();
+                                GUI.getTableDisplayPanel().addRow(
+                                        new Object[]{room.getRoomName(), room.getRoomType(), room.getRoomCapacity(), avail }
+                                );
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
     }
 
     //TODO Implement for booking clerks
