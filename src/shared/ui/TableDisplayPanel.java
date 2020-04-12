@@ -12,7 +12,7 @@ public class TableDisplayPanel extends JPanel {
     private JTabbedPane tabbedPane;
 
     public TableDisplayPanel(){
-        String[] availHeaders = {"Name", "Type", "Size", "Availability"};
+        String[] availHeaders = {"Name", "Type", "Size", "Time", "Date"};
         //Define the available rooms table
         availTableModel = new DefaultTableModel(availHeaders, 0);
         availRoomTable = new JTable(availTableModel){
@@ -36,7 +36,6 @@ public class TableDisplayPanel extends JPanel {
         tabbedPane.addTab("Unavailable", scrollPane2);
         add(tabbedPane);
     }
-
     public void addRow(Object[] rowData){ availTableModel.addRow(rowData); }
     public void addUnavailRow(Object[] rowData){ unavailTableModel.addRow(rowData); }
 
