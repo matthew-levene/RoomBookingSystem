@@ -58,6 +58,9 @@ public class TableDisplayPanel extends JPanel {
         return unavailTableModel.getRowCount();
     }
 
+    public void clearAvailabilityTable(){
+        availTableModel.setRowCount(0);
+    }
     public String getTabTitle(){
         return tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
     }
