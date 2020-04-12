@@ -1,12 +1,11 @@
 package shared.data;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class SharedTermDates {
     private static SharedTermDates instance;
-    private Queue<TermDate> sharedTermDates;
+    private final Queue<TermDate> sharedTermDates;
 
     private SharedTermDates(){
         //Polymorphic assignment to Queue using linked list
@@ -17,6 +16,10 @@ public class SharedTermDates {
     public static SharedTermDates getInstance(){
         if(instance == null){ instance = new SharedTermDates();}
         return instance;
+    }
+
+    public boolean isEmpty(){
+        return sharedTermDates.isEmpty();
     }
 
     public void addTermDate(TermDate termDate){
