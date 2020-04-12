@@ -2,10 +2,8 @@ package manager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 import shared.ui.TableDisplayPanel;
-import shared.ui.TableSearchListener;
 import shared.ui.TableSearchPanel;
 
 public class RoomManagerUI extends JPanel {
@@ -28,7 +26,7 @@ public class RoomManagerUI extends JPanel {
         addUIPanels();
 
          //Listens out for button click event on the RoomActionPanel
-        roomActionPanel.setActionListener(event -> roomController.handleButtonEvent(roomActionPanel, event));
+        roomActionPanel.setActionListener(event -> roomController.processRoomAction(roomActionPanel, event));
 
         //Listens out for button click event on the TableSearchPanel
         searchPanel.setActionListener(() -> roomController.findRoom());
