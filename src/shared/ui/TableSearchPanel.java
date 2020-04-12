@@ -2,9 +2,11 @@ package shared.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
-public class TableSearchPanel extends JPanel {
+public class TableSearchPanel extends JPanel implements ActionListener {
 
     private JList<String> roomTypeList;
     private JCheckBox morningChk, eveningChk;
@@ -12,6 +14,8 @@ public class TableSearchPanel extends JPanel {
     private JTextField dateTxt;
     private JLabel dateLbl;
     private GridBagConstraints cons;
+
+    private TableSearchListener listener;
 
     public TableSearchPanel(){
 
@@ -22,6 +26,7 @@ public class TableSearchPanel extends JPanel {
         eveningChk = new JCheckBox("PM");
 
         searchBtn = new JButton("Search");
+        searchBtn.addActionListener(this);
 
         dateLbl = new JLabel("Date:");
         dateTxt = new JTextField(5);
@@ -73,5 +78,36 @@ public class TableSearchPanel extends JPanel {
         cons.gridy = 2;
         add(searchBtn, cons);
 
+    }
+
+    public boolean isAMSelected(){
+        return morningChk.isSelected();
+    }
+
+    public boolean isPMSelected(){
+        return eveningChk.isSelected();
+    }
+
+    public String getDate(){
+        return dateTxt.getText();
+    }
+
+    public int roomTypeSelected(){
+        return roomTypeList.getSelectedIndex();
+    }
+
+    public String getRoomType(){
+        return roomTypeList.getSelectedValue();
+    }
+
+    public void setActionListener(TableSearchListener listener){
+        this.listener = listener;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent actionEvent) {
+        if(listener != null){
+            listener.searchEventOccurred();
+        }
     }
 }

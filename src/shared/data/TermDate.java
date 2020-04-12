@@ -1,19 +1,21 @@
 package shared.data;
 
+import java.util.Date;
+
 public class TermDate {
 
-    private String startDate, endDate;
+    private Date startDate, endDate;
 
-    public TermDate(String startDate, String endDate){
+    public TermDate(Date startDate, Date endDate){
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 }

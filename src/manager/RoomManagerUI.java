@@ -2,8 +2,10 @@ package manager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 import shared.ui.TableDisplayPanel;
+import shared.ui.TableSearchListener;
 import shared.ui.TableSearchPanel;
 
 public class RoomManagerUI extends JPanel {
@@ -16,7 +18,7 @@ public class RoomManagerUI extends JPanel {
     private RoomController roomController;
 
     private RoomManagerUI(){
-        //Drawing component implementation goes here
+        //set the layout and the border
         setLayout(new FlowLayout());
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2, true));
 
@@ -25,12 +27,11 @@ public class RoomManagerUI extends JPanel {
         //Adds the room manager user interface panels to this class
         addUIPanels();
 
-        /**
-         * Listens out for button click event on the RoomActionPanel
-         */
-        roomActionPanel.setActionListener(event -> {
-            roomController.handleButtonEvent(roomActionPanel, event);
-        });
+         //Listens out for button click event on the RoomActionPanel
+        roomActionPanel.setActionListener(event -> roomController.handleButtonEvent(roomActionPanel, event));
+
+        //Listens out for button click event on the TableSearchPanel
+        searchPanel.setActionListener(() -> roomController.findRoom());
 
     }
 
@@ -60,4 +61,5 @@ public class RoomManagerUI extends JPanel {
     public TableDisplayPanel getTableDisplayPanel(){
         return tableDisplayPanel;
     }
+    public TableSearchPanel getTableSearchPanel(){ return searchPanel; }
 }

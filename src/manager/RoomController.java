@@ -4,10 +4,13 @@ import manager.dialogs.AddRoomDialog;
 import manager.dialogs.AvailabilityDialog;
 import manager.dialogs.TermDatesDialog;
 import shared.data.*;
+import shared.ui.TableSearchPanel;
+import utils.DateUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -24,6 +27,49 @@ public class RoomController implements Observer {
         sharedTermDates = SharedTermDates.getInstance();
 
         this.GUI = GUI;
+    }
+    //TODO Also implement method for BookingController
+    public void findRoom(){
+        //Check if a room type has been selected
+        int selected = GUI.getTableSearchPanel().roomTypeSelected();
+        //If selected equals -1, a room type has not been selected
+        if(selected == -1){
+            JOptionPane.showMessageDialog(
+                    new JFrame(),
+                    "Please select a room type from the list");
+            return;
+        }
+        //Get the selected value from the room type list
+        String roomType = GUI.getTableSearchPanel().getRoomType();
+
+        //Get the date from the date text field
+        String searchDate = GUI.getTableSearchPanel().getDate();
+        //Check if the date is in a valid format e.g. dd-mm-yyyy
+        boolean dateValid = DateUtils.areValidDates(searchDate);
+        if(!dateValid){
+            JOptionPane.showMessageDialog(
+                    new JFrame(),
+                    "Date entered must be in the format of dd-mm-yyyy or dd-mm-yy");
+            return;
+        }
+
+        //Get a list of keys from the shared room structure
+
+        //Check if the date is before or during the term in shared term dates
+        TermDate termDate = sharedTermDates.peekAtTermDate();
+        Date sDate = DateUtils.toDate(searchDate);
+        //If search date is before term starts or after term ends (holidays)
+        if(sDate.before(termDate.getStartDate()) || sDate.after(termDate.getEndDate())){
+
+        }
+        //Else if search date is after term starts and before term ends (term-time)
+        else if(sDate.after(termDate.getStartDate()) && sDate.before(termDate.getEndDate())){
+            //Get the room availabilities that are from evening to evening
+
+        }
+
+        //Get the AM/PM options that were selected
+
     }
 
     public void handleButtonEvent(RoomActionPanel actionPanel, ActionEvent event) {
@@ -161,15 +207,20 @@ public class RoomController implements Observer {
             secondStart = termDatesWindow.getScndStartDate();
             secondEnd = termDatesWindow.getScndEndDate();
 
+            Date firStart = DateUtils.toDate(firstStart);
+            Date firEnd = DateUtils.toDate(firstEnd);
+            Date secStart = DateUtils.toDate(secondStart);
+            Date secEnd = DateUtils.toDate(secondEnd);
             //Add a first term
-            sharedTermDates.addTermDate(new TermDate(firstStart, firstEnd));
+            sharedTermDates.addTermDate(new TermDate(firStart, firEnd));
             //Add a second term
-            sharedTermDates.addTermDate(new TermDate(secondStart, secondEnd));
+            sharedTermDates.addTermDate(new TermDate(secStart, secEnd));
         }
 
 
     }
 
+    //TODO rename method signatures to shorter version
     private void removeFromAvailabilityTable(Object[] message) {
         //For each row in the table
         for (int i = 0; i < GUI.getTableDisplayPanel().getRowCount(); i++) {
@@ -213,7 +264,7 @@ public class RoomController implements Observer {
         });
     }
 
-
+    //TODO Implement for booking clerks
     @Override
     public void update(Observable observable, Object o) {
         Object[] message = (Object[]) o;

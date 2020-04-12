@@ -62,4 +62,11 @@ public class DateUtils {
 
 
     }
+
+    public static Date toDate(String value){
+        Date date = null;
+        try{ date = dateFormat.parse(value); }
+        catch (ParseException ignored){ }
+        return date;
+    }
 }
