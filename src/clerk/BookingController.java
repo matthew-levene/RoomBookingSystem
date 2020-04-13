@@ -2,25 +2,26 @@ package clerk;
 
 import clerk.dialogs.BookingDialog;
 import shared.QueryController;
-import shared.data.Room;
-import shared.data.SharedRooms;
-import shared.data.Unavailability;
+import shared.data.*;
 
 import javax.swing.*;
 import java.awt.print.Book;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 public class BookingController implements Observer {
     private SharedRooms sharedRooms;
+    private SharedBookings sharedBookings;
     private BookingClerkUI GUI;
     private QueryController queryController;
     public BookingController(BookingClerkUI GUI){
         sharedRooms = SharedRooms.getInstance();
         sharedRooms.addObserver(this);
+        sharedBookings = SharedBookings.getInstance();
 
-        this.GUI = GUI;
         queryController = new QueryController(GUI.getTableSearchPanel(),GUI.getTableDisplayPanel());
+        this.GUI = GUI;
     }
 
     public void processBookingAction(){
@@ -46,7 +47,29 @@ public class BookingController implements Observer {
             String phone = bookingWindow.getPhone();
             String notes = bookingWindow.getNotes();
 
-            //TODO create new booking object and store it to shared booking data structure
+            //Get the room name from the selected table entry
+            String roomName = (String) GUI.getTableDisplayPanel().getRoomName(selected);
+            //Get the room object
+            Room room = sharedRooms.getRoom(roomName);
+            //Get selected time from the table
+            String selectedTime = GUI.getTableDisplayPanel().getSelectedValueAt(selected, 3);
+            String selectedDate = GUI.getTableDisplayPanel().getSelectedValueAt(selected, 4);
+            //match selected time against each availability
+            String avTiming = "";
+            for(Availability av : room.getAvailabilities()){
+                //Build the availability timing
+                avTiming = av.getFromTime() + av.getFromTimeScale()
+                        + "-" + av.getToTime() + av.getToTimeScale();
+                if(avTiming.equals(selectedTime) && av.getDate().equals(selectedDate)){
+                    av.setAvailability(false);
+                    break;
+                }
+            }
+            //Write the updated availabilities in the room to the shared data structure
+            sharedRooms.updateRoom(roomName, room, "Unavailable");
+            //Create a new booking object and save it to the shared data structure
+            sharedBookings.addBooking(new Booking(organisation, phone, notes, roomName, avTiming));
+
         }
     }
 

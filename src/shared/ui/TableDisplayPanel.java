@@ -18,6 +18,7 @@ public class TableDisplayPanel extends JPanel {
         availRoomTable = new JTable(availTableModel){
             public boolean isCellEditable(int row, int column) { return false; }
         };
+
         JScrollPane scrollPane1 = new JScrollPane(availRoomTable);
         scrollPane1.setPreferredSize(new Dimension(280, 100));
 
@@ -44,6 +45,10 @@ public class TableDisplayPanel extends JPanel {
 
     public int getSelectedRow(){ return availRoomTable.getSelectedRow(); }
     public int getSelectedUnavailRow(){ return unavailRoomTable.getSelectedRow(); }
+
+    public String getSelectedValueAt(int row, int col){
+        return (String) availTableModel.getValueAt(row, col);
+    }
 
     public Object getRoomName(int row){ return  availTableModel.getValueAt(row, 0); }
     public Object getUnavailRoomName(int row){
