@@ -37,12 +37,20 @@ public class BookingClerkUI extends JPanel{
         tableDisplayPanel = new TableDisplayPanel();
         tableSearchPanel = new TableSearchPanel();
         bookingActionPanel = new BookingActionPanel();
-        bookingController = new BookingController();
+        bookingController = new BookingController(this);
     }
 
     private void addUIPanels(){
         add(tableDisplayPanel);
         add(tableSearchPanel);
         add(bookingActionPanel);
+    }
+
+    public TableDisplayPanel getTableDisplayPanel(){
+        return tableDisplayPanel;
+    }
+
+    public TableSearchPanel getTableSearchPanel(){
+        return tableSearchPanel;
     }
 }
