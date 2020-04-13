@@ -3,6 +3,7 @@ package manager;
 import manager.dialogs.AddRoomDialog;
 import manager.dialogs.AvailabilityDialog;
 import manager.dialogs.TermDatesDialog;
+import shared.QueryController;
 import shared.data.*;
 import utils.DateUtils;
 
@@ -15,14 +16,15 @@ public class RoomController implements Observer {
     private SharedRooms sharedRooms;
     private SharedTermDates sharedTermDates;
     private RoomManagerUI GUI;
+    QueryController qController;
 
     public RoomController(RoomManagerUI GUI) {
         sharedRooms = SharedRooms.getInstance();
         sharedRooms.addObserver(this);
-
         sharedTermDates = SharedTermDates.getInstance();
-
         this.GUI = GUI;
+
+         qController = new QueryController(GUI.getTableSearchPanel(), GUI.getTableDisplayPanel());
     }
     //TODO Also implement method for BookingController
 
@@ -181,159 +183,7 @@ public class RoomController implements Observer {
     //TODO Also implement method for BookingController
     //TableSearchPanel search execution methods
     public void findRoom(){
-        //Check if a room type has been selected
-        int selected = GUI.getTableSearchPanel().roomTypeSelected();
-        //If selected equals -1, a room type has not been selected
-        if(selected == -1){
-            JOptionPane.showMessageDialog(
-                    new JFrame(),
-                    "Please select a room type from the list");
-            return;
-        }
-        //Get the selected value from the room type list
-        String roomType = GUI.getTableSearchPanel().getRoomType();
-        //Get the date from the date text field
-        String searchDate = GUI.getTableSearchPanel().getDate();
-        //If the value from the date field is empty
-        if(searchDate.isEmpty()){
-            JOptionPane.showMessageDialog(new JFrame(), "Please enter a date value in format dd/mm/yyyy or dd/mm/yy");
-            return;
-        }
-        //Check if the date is in a valid format e.g. dd-mm-yyyy
-        boolean dateValid = DateUtils.areValidDates(searchDate);
-        //If the date is invalid
-        if(!dateValid){
-            JOptionPane.showMessageDialog(
-                    new JFrame(),
-                    "Date entered must be in the format of dd-mm-yyyy or dd-mm-yy");
-            return;
-        }
-        //Check if the date is before or during the term in shared term dates
-        TermDate termDate = sharedTermDates.peekAtTermDate();
-        Date sDate = DateUtils.toDate(searchDate);
-        //Get a list of keys from the shared room data structure
-        Set<String> keys = sharedRooms.getKeys();
-        //Clear the availability table
-        GUI.getTableDisplayPanel().clearAvailabilityTable();
-
-        //If search date is before term starts or after term ends (holidays)
-        if(sDate.before(termDate.getStartDate()) || sDate.after(termDate.getEndDate())){
-            findMatchesInHolidays(keys, roomType, searchDate);
-        }
-        //If search date is after term starts and before term ends (term-time)
-        else if(sDate.after(termDate.getStartDate()) && sDate.before(termDate.getEndDate())){
-            findMatchesInTerm(keys, roomType, searchDate);
-        }
-    }
-    private void findMatchesInTerm(Set<String> keys, String roomType, String searchDate){
-        //For each key in the shared rooms structure
-        for(String key : keys){
-            //Get the room
-            Room room = sharedRooms.getRoom(key);
-            //If the room is available
-            if(room.isAvailable()){
-                //Check if the room type matches the selected room type
-                if(room.getRoomType().equals(roomType)) {
-                    for (Availability av : room.getAvailabilities()) {
-                        //If the availability is available
-                        if (av.isAvailable() && (av.getDate().equals(searchDate))) {
-                            //If the availability is from PM - PM
-                            if (av.getFromTimeScale().equals("PM") && av.getToTimeScale().equals("PM")) {
-                                //Add the entry to the availability table
-                                addToTable(room, av);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        //Prompt user that due to term time policy, only PM availabilities are allowed
-        JOptionPane.showMessageDialog(
-                new JFrame(),
-                "Search date is within term time. " +
-                        "\n Only PM availability slots are available"
-        );
-    }
-    private void findMatchesInHolidays(Set<String> keys, String roomType, String searchDate){
-        //Find out which checkboxes were selected
-        boolean isAMChecked = GUI.getTableSearchPanel().isAMSelected();
-        boolean isPMChecked = GUI.getTableSearchPanel().isPMSelected();
-
-        for(String key : keys) {
-            //Get the room
-            Room room = sharedRooms.getRoom(key);
-            //Check if the room is available
-            if (room.isAvailable()) {
-                //Check if the room type matches the selected room type
-                if (room.getRoomType().equals(roomType)) {
-                    for (Availability av : room.getAvailabilities()) {
-                        //If the availability is available
-                        if (av.isAvailable() && (av.getDate().equals(searchDate))) {
-                            //If both AM and PM are checked
-                            if((isAMChecked && isPMChecked)){
-                                addToTable(room, av);
-                            }
-                            //If only AM are checked
-                            else if(isAMChecked && av.getFromTimeScale().equals("AM")){
-                                addToTable(room, av);
-                            }
-                            //If AM and PM are checked
-                            else if(isPMChecked && av.getFromTimeScale().equals("PM")){
-                                addToTable(room, av);
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    //TableDisplayPanel table manipulation methods
-    private void removeRoomFromAvailableTable(Object[] message) {
-        //For each row in the table
-        for (int i = 0; i < GUI.getTableDisplayPanel().getRowCount(); i++) {
-            //Get the room name attached to the row
-            String name = (String) GUI.getTableDisplayPanel().getRoomName(i);
-            //if the room name in the row is equal to the name notified
-            if (name.equals(message[1])) {
-                //Remove it from the table
-                GUI.getTableDisplayPanel().removeRow(i);
-                i--;
-            }
-        }
-    }
-    private void addRoomToAvailableTable(Room room){
-        for (Availability av : room.getAvailabilities()) {
-            if(av.isAvailable()) {
-                addToTable(room, av);
-            }
-        }
-    }
-    private void removeFromUnavailableTable(Object[] message){
-        for(int i = 0; i < GUI.getTableDisplayPanel().getUnavailRowCount(); i++){
-            if(GUI.getTableDisplayPanel().getUnavailRoomName(i).equals(message[1]))
-            {
-                GUI.getTableDisplayPanel().removeUnavailRow(i);
-                break;
-            }
-        }
-    }
-    private void addToUnavailableTable(Object[] message, Unavailability unav){
-        GUI.getTableDisplayPanel().addUnavailRow(new Object[]{
-                message[1], unav.getReason(),
-                unav.getTime() + " " + unav.getTimescale()
-        });
-    }
-    private void addToTable(Room room, Availability av){
-        String avTimings = av.getFromTime() + av.getFromTimeScale()
-                + "-" + av.getToTime() + av.getToTimeScale();
-        Object[] rowData = {
-                room.getRoomName(),
-                room.getRoomType(),
-                room.getRoomCapacity(), avTimings, av.getDate()
-        };
-        GUI.getTableDisplayPanel().addRow(rowData);
+        qController.findRoom();
     }
 
     //TODO Implement for BookingController
@@ -344,18 +194,18 @@ public class RoomController implements Observer {
             //Get the room by key
             Room room = sharedRooms.getRoom((String) message[1]);
             //Add room entry to room availability table
-            addRoomToAvailableTable(room);
+            qController.addRoomToAvailableTable(room);
         }
         else if (message[0].equals("Remove")) {
             /* Update the TableDisplayPanel to remove
              * any entries containing the same room name*/
-            removeRoomFromAvailableTable(message);
+            qController.removeRoomFromAvailableTable(message);
         }
 
         else if (message[0].equals("Update")) {
             /* Update the TableDisplayPanel to remove
              * any entries containing the same room name*/
-            removeRoomFromAvailableTable(message);
+            qController.removeRoomFromAvailableTable(message);
 
             //Get the room object
             Room room = sharedRooms.getRoom((String) message[1]);
@@ -367,7 +217,7 @@ public class RoomController implements Observer {
                     //Get the unavailability object
                     Unavailability unav = room.getUnavailability();
                     //Add the room information to the unavailable rooms table
-                    addToUnavailableTable(message, unav);
+                    qController.addToUnavailableTable(message, unav);
                 }
             }
             //Message contained request to change room state: Unavilable -> Available
@@ -375,9 +225,9 @@ public class RoomController implements Observer {
                 //If the room is available
                 if (room.isAvailable()) {
                     //Write the availability information to the available rooms table
-                    addRoomToAvailableTable(room);
+                    qController.addRoomToAvailableTable(room);
                     //Remove the room entry from the unavailable rooms table
-                    removeFromUnavailableTable(message);
+                    qController.removeFromUnavailableTable(message);
                 }
             }
         }
