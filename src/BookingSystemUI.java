@@ -1,7 +1,5 @@
 import clerk.BookingClerkUI;
-import clerk.dialogs.ViewBookingDialog;
 import manager.RoomManagerUI;
-import manager.dialogs.AddRoomDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,11 +17,25 @@ public class BookingSystemUI extends JPanel {
         rmThread.start();
 
         //Initialise the booking clerk interface and add it to the frame
-        Thread bcThread = new Thread(() -> {
+        Thread bcThread1 = new Thread(() -> {
             BookingClerkUI bookingClerkUI = new BookingClerkUI();
             add(bookingClerkUI, BorderLayout.WEST);
         });
-        bcThread.start();
+        bcThread1.start();
+
+        //Initialise the booking clerk interface and add it to the frame
+        Thread bcThread2 = new Thread(() -> {
+            BookingClerkUI bookingClerkUI = new BookingClerkUI();
+            add(bookingClerkUI, BorderLayout.CENTER);
+        });
+        bcThread2.start();
+
+        //Initialise the booking clerk interface and add it to the frame
+        Thread bcThread3 = new Thread(() -> {
+            BookingClerkUI bookingClerkUI = new BookingClerkUI();
+            add(bookingClerkUI, BorderLayout.EAST);
+        });
+        bcThread3.start();
     }
 
     public static void main(String[] args) {
