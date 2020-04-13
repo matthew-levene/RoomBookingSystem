@@ -5,15 +5,17 @@ public class Booking {
     private String phone;
     private String notes;
     private String roomName;
-    private String dateTime;
+    private String time;
+    private String date;
 
-    public Booking(String organisation, String phone, String notes, String roomName, String dateTime){
+    public Booking(String organisation, String phone, String notes, String roomName, String time, String date){
         this.organisation = organisation;
         this.phone = phone;
         this.notes = notes;
 
         this.roomName = roomName;
-        this.dateTime = dateTime;
+        this.time = time;
+        this.date = date;
     }
 
     public String getOrganisation() {
@@ -32,7 +34,9 @@ public class Booking {
         return roomName;
     }
 
-    public String getDateTime(){
-        return dateTime;
+    public String getTime(){
+        return time;
     }
+
+    public String getDate() { return date; }
 }
