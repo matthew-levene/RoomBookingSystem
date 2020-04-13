@@ -16,7 +16,7 @@ public class RoomController implements Observer {
     private SharedRooms sharedRooms;
     private SharedTermDates sharedTermDates;
     private RoomManagerUI GUI;
-    QueryController qController;
+    QueryController queryController;
 
     public RoomController(RoomManagerUI GUI) {
         sharedRooms = SharedRooms.getInstance();
@@ -24,7 +24,7 @@ public class RoomController implements Observer {
         sharedTermDates = SharedTermDates.getInstance();
         this.GUI = GUI;
 
-         qController = new QueryController(GUI.getTableSearchPanel(), GUI.getTableDisplayPanel());
+         queryController = new QueryController(GUI.getTableSearchPanel(), GUI.getTableDisplayPanel());
     }
     //TODO Also implement method for BookingController
 
@@ -176,14 +176,12 @@ public class RoomController implements Observer {
             //Add a second term
             sharedTermDates.addTermDate(new TermDate(secStart, secEnd));
         }
-
-
     }
 
     //TODO Also implement method for BookingController
     //TableSearchPanel search execution methods
     public void findRoom(){
-        qController.findRoom();
+        queryController.findRoom();
     }
 
     //TODO Implement for BookingController
@@ -194,18 +192,18 @@ public class RoomController implements Observer {
             //Get the room by key
             Room room = sharedRooms.getRoom((String) message[1]);
             //Add room entry to room availability table
-            qController.addRoomToAvailableTable(room);
+            queryController.addRoomToAvailableTable(room);
         }
         else if (message[0].equals("Remove")) {
             /* Update the TableDisplayPanel to remove
              * any entries containing the same room name*/
-            qController.removeRoomFromAvailableTable(message);
+            queryController.removeRoomFromAvailableTable(message);
         }
 
         else if (message[0].equals("Update")) {
             /* Update the TableDisplayPanel to remove
              * any entries containing the same room name*/
-            qController.removeRoomFromAvailableTable(message);
+            queryController.removeRoomFromAvailableTable(message);
 
             //Get the room object
             Room room = sharedRooms.getRoom((String) message[1]);
@@ -217,7 +215,7 @@ public class RoomController implements Observer {
                     //Get the unavailability object
                     Unavailability unav = room.getUnavailability();
                     //Add the room information to the unavailable rooms table
-                    qController.addToUnavailableTable(message, unav);
+                    queryController.addToUnavailableTable(message, unav);
                 }
             }
             //Message contained request to change room state: Unavilable -> Available
@@ -225,9 +223,9 @@ public class RoomController implements Observer {
                 //If the room is available
                 if (room.isAvailable()) {
                     //Write the availability information to the available rooms table
-                    qController.addRoomToAvailableTable(room);
+                    queryController.addRoomToAvailableTable(room);
                     //Remove the room entry from the unavailable rooms table
-                    qController.removeFromUnavailableTable(message);
+                    queryController.removeFromUnavailableTable(message);
                 }
             }
         }
