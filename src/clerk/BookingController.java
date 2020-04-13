@@ -1,10 +1,13 @@
 package clerk;
 
+import clerk.dialogs.BookingDialog;
 import shared.QueryController;
 import shared.data.Room;
 import shared.data.SharedRooms;
 import shared.data.Unavailability;
 
+import javax.swing.*;
+import java.awt.print.Book;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -21,6 +24,30 @@ public class BookingController implements Observer {
     }
 
     public void processBookingAction(){
+        //Check if tab title equals Available
+        String tabTitle = GUI.getTableDisplayPanel().getTabTitle();
+        if(!tabTitle.equals("Available")){
+            JOptionPane.showMessageDialog(new JFrame(), "Available rooms table must be active before booking a slot");
+            return;
+        }
+        //Check if availability slot on table has been selected
+        int selected = GUI.getTableDisplayPanel().getSelectedRow();
+        if(selected == -1){
+            JOptionPane.showMessageDialog(new JFrame(), "Please select a row from the table to book");
+            return;
+        }
+        //Open Booking Dialog
+        BookingDialog bookingWindow = new BookingDialog();
+
+        //If the action set in the dialog window is equal to 1
+        if(bookingWindow.getAction() == 1){
+            //Get the booking information
+            String organisation = bookingWindow.getOrganisation();
+            String phone = bookingWindow.getPhone();
+            String notes = bookingWindow.getNotes();
+
+            //TODO create new booking object and store it to shared booking data structure
+        }
     }
 
     public void findRoom(){
