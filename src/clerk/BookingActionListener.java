@@ -1,5 +1,7 @@
 package clerk;
 
+import java.awt.event.ActionEvent;
+
 public interface BookingActionListener {
-    void bookingEventOccurred();
+    void bookingEventOccurred(ActionEvent event);
 }

@@ -22,6 +22,10 @@ public class SharedBookings {
         return sharedBookings.get(index);
     }
 
+    public ArrayList<Booking> getAllBookings(){
+        return sharedBookings;
+    }
+
     //Implemented but never called
     //Prototype does not call for bookings to be deleted
     private void removeBooking(int index){

@@ -1,4 +1,5 @@
 import clerk.BookingClerkUI;
+import clerk.dialogs.ViewBookingDialog;
 import manager.RoomManagerUI;
 import manager.dialogs.AddRoomDialog;
 

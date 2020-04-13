@@ -1,10 +1,12 @@
 package clerk;
 
 import clerk.dialogs.BookingDialog;
+import clerk.dialogs.ViewBookingDialog;
 import shared.QueryController;
 import shared.data.*;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -24,52 +26,70 @@ public class BookingController implements Observer {
         this.GUI = GUI;
     }
 
-    public void processBookingAction(){
-        //Check if tab title equals Available
-        String tabTitle = GUI.getTableDisplayPanel().getTabTitle();
-        if(!tabTitle.equals("Available")){
-            JOptionPane.showMessageDialog(new JFrame(), "Available rooms table must be active before booking a slot");
-            return;
-        }
-        //Check if availability slot on table has been selected
-        int selected = GUI.getTableDisplayPanel().getSelectedRow();
-        if(selected == -1){
-            JOptionPane.showMessageDialog(new JFrame(), "Please select a row from the table to book");
-            return;
-        }
-        //Open Booking Dialog
-        BookingDialog bookingWindow = new BookingDialog();
-
-        //If the action set in the dialog window is equal to 1
-        if(bookingWindow.getAction() == 1){
-            //Get the booking information
-            String organisation = bookingWindow.getOrganisation();
-            String phone = bookingWindow.getPhone();
-            String notes = bookingWindow.getNotes();
-
-            //Get the room name from the selected table entry
-            String roomName = (String) GUI.getTableDisplayPanel().getRoomName(selected);
-            //Get the room object
-            Room room = sharedRooms.getRoom(roomName);
-            //Get selected time from the table
-            String selectedTime = GUI.getTableDisplayPanel().getSelectedValueAt(selected, 3);
-            String selectedDate = GUI.getTableDisplayPanel().getSelectedValueAt(selected, 4);
-            //match selected time against each availability
-            String avTiming = "";
-            for(Availability av : room.getAvailabilities()){
-                //Build the availability timing
-                avTiming = av.getFromTime() + av.getFromTimeScale()
-                        + "-" + av.getToTime() + av.getToTimeScale();
-                if(avTiming.equals(selectedTime) && av.getDate().equals(selectedDate)){
-                    av.setAvailability(false);
-                    break;
-                }
+    public void processBookingAction(ActionEvent event){
+        //if the create booking button was pressed
+        if(event.getSource() == GUI.getBookingActionPanel().getCreateButton()){
+            //Check if tab title equals Available
+            String tabTitle = GUI.getTableDisplayPanel().getTabTitle();
+            if (!tabTitle.equals("Available")) {
+                JOptionPane.showMessageDialog(new JFrame(), "Available rooms table must be active before booking a slot");
+                return;
             }
-            //Write the updated availabilities in the room to the shared data structure
-            sharedRooms.updateRoom(roomName, room, "Unavailable");
-            //Create a new booking object and save it to the shared data structure
-            sharedBookings.addBooking(new Booking(organisation, phone, notes, roomName, avTiming));
+            //Check if availability slot on table has been selected
+            int selected = GUI.getTableDisplayPanel().getSelectedRow();
+            if (selected == -1) {
+                JOptionPane.showMessageDialog(new JFrame(), "Please select a row from the table to book");
+                return;
+            }
+            //Open Booking Dialog
+            BookingDialog bookingWindow = new BookingDialog();
 
+            //If the action set in the dialog window is equal to 1
+            if (bookingWindow.getAction() == 1) {
+                //Get the booking information
+                String organisation = bookingWindow.getOrganisation();
+                String phone = bookingWindow.getPhone();
+                String notes = bookingWindow.getNotes();
+
+                //Get the room name from the selected table entry
+                String roomName = (String) GUI.getTableDisplayPanel().getRoomName(selected);
+                //Get the room object
+                Room room = sharedRooms.getRoom(roomName);
+                //Get selected time from the table
+                String selectedTime = GUI.getTableDisplayPanel().getSelectedValueAt(selected, 3);
+                String selectedDate = GUI.getTableDisplayPanel().getSelectedValueAt(selected, 4);
+                //match selected time against each availability
+                String avTiming = "";
+                for (Availability av : room.getAvailabilities()) {
+                    //Build the availability timing
+                    avTiming = av.getFromTime() + av.getFromTimeScale()
+                            + "-" + av.getToTime() + av.getToTimeScale();
+                    if (avTiming.equals(selectedTime) && av.getDate().equals(selectedDate)) {
+                        av.setAvailability(false);
+                        break;
+                    }
+                }
+                //Write the updated availabilities in the room to the shared data structure
+                sharedRooms.updateRoom(roomName, room, "Unavailable");
+                //Create a new booking object and save it to the shared data structure
+                sharedBookings.addBooking(new Booking(organisation, phone, notes, roomName, avTiming, selectedDate));
+            }
+        }
+        //If the view bookings button was pressed
+        else if(event.getSource() == GUI.getBookingActionPanel().getViewButton()){
+            ViewBookingDialog viewBookingWindow = new ViewBookingDialog();
+            //Get all bookings and display them in the dialog
+            for(Booking booking : sharedBookings.getAllBookings()){
+                viewBookingWindow.addRowData(new Object[]{
+                        booking.getOrganisation(),
+                        booking.getPhone(),
+                        booking.getNotes(),
+                        booking.getRoomName(),
+                        booking.getTime(),
+                        booking.getDate()
+                });
+            }
+            viewBookingWindow.setVisible();
         }
     }
 

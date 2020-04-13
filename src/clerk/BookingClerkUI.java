@@ -26,7 +26,7 @@ public class BookingClerkUI extends JPanel{
 
         //Listens out for button click event on the BookingActionPanel
         bookingActionPanel.setBookingActionListener(
-                () -> bookingController.processBookingAction());
+                event -> bookingController.processBookingAction(event));
 
         //Listens out for button click event on the TableSearchPanel
         tableSearchPanel.setActionListener(() -> bookingController.findRoom());
@@ -53,4 +53,6 @@ public class BookingClerkUI extends JPanel{
     public TableSearchPanel getTableSearchPanel(){
         return tableSearchPanel;
     }
+
+    public BookingActionPanel getBookingActionPanel(){ return bookingActionPanel; }
 }
