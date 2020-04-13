@@ -130,6 +130,12 @@ public class BookingDialog extends JDialog implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please enter the booking information");
                 return;
             }
+
+            //Check if number is greater than or less than 11 digits
+            if(phone.length() != 11){
+                JOptionPane.showMessageDialog(this, "Phone does not contain 11 digits");
+                return;
+            }
             //set action equal to 1
             setAction();
         }
