@@ -1,3 +1,4 @@
+import clerk.BookingClerkUI;
 import manager.RoomManagerUI;
 import manager.dialogs.AddRoomDialog;
 
@@ -9,11 +10,19 @@ public class BookingSystemUI extends JPanel {
         //Set the layout
         setLayout(new BorderLayout());
 
+        //Initialise the room manager interface and add it to the frame
         Thread rmThread = new Thread(() -> {
             RoomManagerUI managerUI = RoomManagerUI.getInstance();
             add(managerUI, BorderLayout.NORTH);
         });
         rmThread.start();
+
+        //Initialise the booking clerk interface and add it to the frame
+        Thread bcThread = new Thread(() -> {
+            BookingClerkUI bookingClerkUI = new BookingClerkUI();
+            add(bookingClerkUI, BorderLayout.WEST);
+        });
+        bcThread.start();
     }
 
     public static void main(String[] args) {
