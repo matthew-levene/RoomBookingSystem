@@ -271,7 +271,7 @@ public class AddRoomDialog extends JDialog implements ActionListener {
             //Check that the 'from' and 'to' values are greater than 0 and less than 12
             int fTime = Integer.parseInt(fromTime);
             int tTime = Integer.parseInt(toTime);
-            if((fTime >= 1 && fTime <= 12) && (tTime >= 1 && tTime <= 24)){
+            if((fTime >= 1 && fTime <= 24) && (tTime >= 1 && tTime <= 24)){
                 //Add to availability array
                 addAvailability(date, fromTime, toTime, fromSelected, toSelected);
             }
