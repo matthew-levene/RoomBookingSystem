@@ -79,16 +79,19 @@ public class BookingController implements Observer {
         else if(event.getSource() == GUI.getBookingActionPanel().getViewButton()){
             ViewBookingDialog viewBookingWindow = new ViewBookingDialog();
             //Get all bookings and display them in the dialog
-            for(Booking booking : sharedBookings.getAllBookings()){
-                viewBookingWindow.addRowData(new Object[]{
-                        booking.getOrganisation(),
-                        booking.getPhone(),
-                        booking.getNotes(),
-                        booking.getRoomName(),
-                        booking.getTime(),
-                        booking.getDate()
-                });
-            }
+            new Thread(() -> {
+                for (Booking booking : sharedBookings.getAllBookings()) {
+                    viewBookingWindow.addRowData(new Object[]{
+                            booking.getOrganisation(),
+                            booking.getPhone(),
+                            booking.getNotes(),
+                            booking.getRoomName(),
+                            booking.getTime(),
+                            booking.getDate()
+                    });
+                }
+            }).start();
+
             viewBookingWindow.setVisible();
         }
     }

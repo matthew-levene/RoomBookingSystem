@@ -22,7 +22,7 @@ public class SharedBookings {
         return sharedBookings.get(index);
     }
 
-    public ArrayList<Booking> getAllBookings(){
+    public synchronized ArrayList<Booking> getAllBookings(){
         return sharedBookings;
     }
 
